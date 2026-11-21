@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scegli il tuo dolce</title>
+<style>
+:root{--bg:#fff7f0;--card:#fff;--ink:#2d1f1a;--mut:#85736b;--acc:#e8553a;--acc2:#ff9f1c;--accl:#ffe9e1;--line:#f0e1d6;--ok:#16a34a;--r:18px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:100px;overflow-x:hidden}
+.hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#ff9f1c 0%,#e8553a 60%,#d6336c 100%);color:#fff;padding:34px 20px 54px;text-align:center;border-radius:0 0 34px 34px}
+.hero h1{margin:0;font-size:30px;letter-spacing:-.02em;position:relative}
+.hero p{margin:6px 0 0;opacity:.92;position:relative}
+.fl{position:absolute;font-size:34px;opacity:.9;animation:bob 4s ease-in-out infinite}
+.fl:nth-child(1){left:7%;top:20px}.fl:nth-child(2){right:8%;top:26px;animation-delay:-1.3s;font-size:42px}.fl:nth-child(3){left:20%;bottom:8px;animation-delay:-2.2s;font-size:26px}.fl:nth-child(4){right:22%;bottom:6px;animation-delay:-.7s;font-size:28px}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-12px) rotate(8deg)}}
+.steps{display:flex;justify-content:center;gap:6px;margin:-24px auto 6px;max-width:640px;padding:0 14px;position:relative}
+.steps span{flex:1;background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 6px;text-align:center;font-size:13px;color:var(--mut);font-weight:600;box-shadow:0 4px 14px rgba(120,60,20,.08);transition:.3s}
+.steps span.on{background:var(--ink);color:#fff;transform:translateY(-2px)}
+.steps span.ok{color:var(--ok)}
+main{max-width:640px;margin:auto;padding:8px 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:12px 0;box-shadow:0 6px 20px rgba(120,60,20,.05)}
+h2{margin:0 0 10px;font-size:18px}
+h3{margin:14px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;font:inherit;cursor:pointer;color:var(--ink);transition:transform .15s,background .2s,border-color .2s,box-shadow .2s}
+.chip:active{transform:scale(.94)}
+.chip.on{background:linear-gradient(135deg,var(--acc2),var(--acc));border-color:transparent;color:#fff;box-shadow:0 6px 14px rgba(232,85,58,.3)}
+.chip:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.pop{animation:pop .35s ease}
+@keyframes pop{0%{transform:scale(.88)}55%{transform:scale(1.12)}100%{transform:scale(1)}}
+.big{flex:1;min-width:96px;text-align:center;border-radius:16px;padding:12px 8px}
+.big small{display:block;font-size:12px;opacity:.85;margin-top:3px;line-height:1.25}
+.big .pr{display:block;font-size:17px;font-weight:800}
+.prods{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.prodc{border:2px solid var(--line);background:#fff;border-radius:20px;padding:16px 6px;text-align:center;cursor:pointer;font:inherit;color:var(--ink);transition:transform .2s,border-color .2s,box-shadow .2s}
+.prodc .em{display:block;font-size:42px;transition:transform .3s}
+.prodc b{display:block;margin-top:4px}
+.prodc:hover .em,.prodc.on .em{transform:scale(1.15) rotate(-6deg)}
+.prodc.on{border-color:var(--acc);box-shadow:0 8px 20px rgba(232,85,58,.22);background:var(--accl)}
+.counter{display:inline-block;margin-left:8px;padding:2px 10px;border-radius:99px;background:var(--accl);color:var(--acc);font-weight:800;font-size:13px;transition:.3s}
+.counter.full{background:#dcfce7;color:var(--ok);animation:pop .4s}
+.hint{color:var(--mut);font-size:14px;font-weight:400}
+.err{color:#b91c1c;font-size:14px;font-weight:600;margin:10px 0 0;min-height:1em}
+.err:not(:empty){animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.msg{background:var(--accl);color:var(--acc);padding:8px 12px;border-radius:12px;font-size:14px;margin:10px 0}
+button.primary,a.primary{display:block;width:100%;text-align:center;text-decoration:none;border:0;border-radius:16px;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#fff;font:inherit;font-weight:800;padding:16px;cursor:pointer;margin-top:14px;box-shadow:0 10px 22px rgba(232,85,58,.3);transition:transform .15s}
+button.primary:active,a.primary:active{transform:scale(.97)}
+button.primary:disabled{opacity:.55}
+button.ghost{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:8px 12px;font:inherit;cursor:pointer;color:var(--ink)}
+input,textarea{width:100%;font:inherit;border:1.5px solid var(--line);border-radius:14px;padding:12px;background:#fff;color:var(--ink);transition:border-color .2s,box-shadow .2s}
+input:focus,textarea:focus{outline:0;border-color:var(--acc);box-shadow:0 0 0 4px var(--accl)}
+label{display:block;font-weight:700;margin:14px 0 6px}
+.item{border-top:1px dashed var(--line);padding:10px 0;display:flex;gap:10px;justify-content:space-between;align-items:center}
+.item:first-of-type{border-top:0}
+.item .l{display:flex;gap:10px;align-items:center}
+.item .e{font-size:28px}
+.item b{display:block}
+.item span{color:var(--mut);font-size:13px}
+.tot{display:flex;justify-content:space-between;font-size:20px;font-weight:800;border-top:2px solid var(--ink);padding-top:10px;margin-top:6px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));z-index:5;animation:up .35s ease}
+@keyframes up{from{transform:translateY(100%)}}
+.bar div{max-width:640px;margin:auto;display:flex;align-items:center;gap:12px}
+.bar .t{flex:1;font-weight:700}
+.bar .t small{display:block;color:var(--mut);font-weight:500}
+.bar button{border:0;border-radius:14px;background:linear-gradient(135deg,var(--acc2),var(--acc));color:#fff;font:inherit;font-weight:800;padding:13px 18px;cursor:pointer}
+.bump{animation:pop .4s}
+.done{text-align:center;padding:26px 10px}
+.done .big-e{font-size:56px;animation:pop .6s}
+.code{font-size:38px;font-weight:900;letter-spacing:.1em;color:var(--acc);margin:4px 0}
+.kv{background:var(--bg);border-radius:14px;padding:12px;margin:10px 0;text-align:left;word-break:break-all}
+.kv small{color:var(--mut);display:block}
+.cash{font-weight:700;margin-top:8px;color:var(--ok);min-height:1.4em}
+.conf{position:fixed;top:-30px;font-size:24px;pointer-events:none;z-index:20;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:.8}}
+.enter>*{animation:rise .45s both}
+.enter>*:nth-child(2){animation-delay:.06s}.enter>*:nth-child(3){animation-delay:.12s}.enter>*:nth-child(4){animation-delay:.18s}.enter>*:nth-child(5){animation-delay:.24s}.enter>*:nth-child(6){animation-delay:.3s}.enter>*:nth-child(n+7){animation-delay:.36s}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}}
+a.lnk{color:var(--acc);font-weight:600}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="hero">
+  <span class="fl">🥣</span><span class="fl">🥞</span><span class="fl">🧇</span><span class="fl">🍫</span>
+  <h1 id="brand">Scegli il tuo dolce</h1>
+  <p>Ordina oggi, ritira domani. Semplice.</p>
+</div>
+<div class="steps" id="steps"><span>1 · Dolci</span><span>2 · Ritiro e pagamento</span><span>3 · Fatto</span></div>
+<main id="app"></main>
+<div class="bar" id="bar" hidden><div><span class="t" id="barTxt"></span><button id="barBtn">Avanti →</button></div></div>
+
+<script>
+/* ================= CONFIGURAZIONE (modifica solo qui) ================= */
+const CONFIG = {
+  brand: "Sweetfit Desserts",
+  sedi: [
+    // whatsapp: numero con prefisso, senza + e spazi (es. "393331234567"). Se vuoto, il tasto apre WhatsApp e il cliente sceglie la chat.
+    {id:"sapienza",   nome:"Aula 11 · Ingegneria Elettronica, Sapienza", email:"sweetfit.dessertss@gmail.com", whatsapp:"393713346937"},
+    {id:"torvergata", nome:"Macro area Scienze, Tor Vergata",             email:"sweetfit.dessertss@gmail.com", whatsapp:"393713346937"} // metti qui mail e WhatsApp dell'amico di Tor Vergata
+  ],
+  orari: ["8:00","10:00"],
+  giorniAttivi: [1,2,3,4,5],   // 1=lun ... 5=ven
+  anticipoGiorni: 1,           // si ordina il giorno prima...
+  oraLimite: 12,               // ...entro le 12:00
+  prezzi: {S:4, M:5.5, L:7},
+  contantiTagli: [5,10,20,50],
+  pagamento: {                  // lascia vuoto per nascondere il metodo
+    iban: "IT02A0366901600817886490816",
+    intestatario: "ELEONORA LUGLI & SAMUEL RINCHIUSI",
+    paypal: ""                  // solo il nome di paypal.me/NOME
+  },
+  titoloEmail: "Nuovo ordine"
+};
+
+const PRODS = {
+  porridge:{nome:"Porridge",em:"🥣",base:{S:"30 g base · 80 g yogurt",M:"45 g base · 120 g yogurt",L:"60 g base · 160 g yogurt"},farine:["Brownie","Nut choc","Caffè + caramello","Vanilla"]},
+  pancake:{nome:"Pancake",em:"🥞",base:{S:"2 pancake",M:"3 pancake",L:"4 pancake"},farine:["Brownie","Ferrero Rocher","Caffè + caramello","Vanilla"]},
+  waffle:{nome:"Waffle",em:"🧇",base:{S:"2 waffle",M:"3 waffle",L:"4 waffle"},farine:["Brownie","Ferrero Rocher","Caffè + caramello","Vanilla"]}
+};
+const REGOLE = {S:{c:1,s:1},M:{c:1,s:2},L:{c:2,s:3}};   // c = crunchy (granole), s = salse
+const SALSE = [
+  {g:"Deluxe",o:["Crema pistacchio","Crema duo (cioccolato bianco + latte)","Granola di pistacchio","Cocco"]},
+  {g:"Gourmet",o:["Burro d'arachidi","Burro d'arachidi salato","Nutella","Burro peanut choco","Cioccolato fondente"]},
+  {g:"Zero Kcal",o:["Salsa cioccolato + cocco","Salsa cioccolato + caramello","Salsa cioccolato","Salsa lampone","Marmellata ciliege","Marmellata frutti di bosco"]}
+];
+const CRUNCHY = ["Kellogs","Choco Pops","Musli/granola","Lotus","Oreo"];
+const YOGURT = ["Normale","Senza lattosio"];
+
+/* ================= stato ================= */
+const $app=document.getElementById("app"), $bar=document.getElementById("bar"), $barTxt=document.getElementById("barTxt"), $barBtn=document.getElementById("barBtn"), $steps=document.getElementById("steps");
+document.getElementById("brand").textContent = CONFIG.brand;
+document.title = CONFIG.brand + " · Ordina";
+const st = {view:"build", cart:[], cur:null, err:"", notice:"", order:null,
+  f:{sede:null,data:null,ora:null,nome:"",tel:"",note:"",pay:null,cash:null}};
+let enter = true, popReq = null;
+
+const eur = n => "€" + n.toFixed(2).replace(".", ",").replace(",00", ",00");
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const price = it => CONFIG.prezzi[it.size];
+const total = () => st.cart.reduce((s,it)=>s+price(it),0);
+const payOnline = () => !!(CONFIG.pagamento.iban || CONFIG.pagamento.paypal);
+
+function newItem(p){ return {prod:p,size:null,flour:null,yogurt:null,sauces:[],crunch:[]}; }
+function describe(it){
+  const p=[`${PRODS[it.prod].nome} ${it.size}`];
+  if(it.flour) p.push("farina "+it.flour);
+  if(it.yogurt) p.push("yogurt "+it.yogurt.toLowerCase());
+  p.push("crunchy: "+(it.crunch.join(", ")||"nessuno"));
+  p.push("salse: "+(it.sauces.join(", ")||"nessuna"));
+  return p.join(" · ");
+}
+function detail(it){ return describe(it).split(" · ").slice(1).join(" · "); }
+function missing(it){
+  if(!it.size) return "Scegli la taglia.";
+  if(it.prod==="porridge" && !it.yogurt) return "Scegli lo yogurt.";
+  const r=REGOLE[it.size];
+  if(it.crunch.length<r.c) return `Scegli ancora ${r.c-it.crunch.length} crunchy (granola).`;
+  if(it.sauces.length<r.s) return `Scegli ancora ${r.s-it.sauces.length} ${r.s-it.sauces.length===1?"salsa":"salse"}.`;
+  return "";
+}
+
+/* ================= date e orari (fuso Roma) ================= */
+function romeNow(){
+  const p=new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/Rome",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date());
+  const g=t=>+p.find(x=>x.type===t).value;
+  return Date.UTC(g("year"),g("month")-1,g("day"),g("hour")%24,g("minute"));
+}
+const DAY=86400000;
+function deadlineFor(dayMs){ return dayMs - CONFIG.anticipoGiorni*DAY + CONFIG.oraLimite*3600000; }
+function availableDays(nowMs){
+  const today = Math.floor(nowMs/DAY)*DAY, out=[];
+  for(let i=1;i<=14 && out.length<6;i++){
+    const d=today+i*DAY, wd=new Date(d).getUTCDay();
+    if(!CONFIG.giorniAttivi.includes(wd)) continue;
+    if(nowMs < deadlineFor(d)) out.push(d);
+  }
+  return out;
+}
+const fmtDay = (ms,o) => new Date(ms).toLocaleDateString("it-IT",Object.assign({timeZone:"UTC"},o));
+const dayKey = ms => new Date(ms).toISOString().slice(0,10);
+
+/* ================= viste ================= */
+function setHTML(h){ $app.classList.toggle("enter",enter); $app.innerHTML=h; enter=false; }
+function render(){
+  if(st.view==="build") viewBuild();
+  else if(st.view==="checkout") viewCheckout();
+  else if(st.view==="done") viewDone();
+  else viewFail();
+  if(popReq){ const e=[...$app.querySelectorAll("[data-"+popReq.k+"]")].find(x=>x.dataset[popReq.k]===popReq.v); if(e) e.classList.add("pop"); popReq=null; }
+  updateBar(); updateSteps();
+}
+function go(v){ st.view=v; enter=true; st.err=""; render(); window.scrollTo({top:0,behavior:"smooth"}); }
+
+function viewBuild(){
+  const cur=st.cur; let h="";
+  if(st.cart.length){
+    h+=`<div class="card"><h2>Il tuo ordine (${st.cart.length})</h2>${st.cart.map((it,i)=>`<div class="item"><div class="l"><span class="e">${PRODS[it.prod].em}</span><div><b>${PRODS[it.prod].nome} ${it.size} · ${eur(price(it))}</b><span>${esc(detail(it))}</span></div></div><button class="ghost" data-del="${i}">Togli</button></div>`).join("")}</div>`;
+  }
+  h+=`<div class="card"><h2>${st.cart.length?"Aggiungi un altro dolce":"Cosa ti va oggi?"}</h2><div class="prods">${Object.keys(PRODS).map(p=>`<button class="prodc ${cur&&cur.prod===p?"on":""}" data-prod="${p}"><span class="em">${PRODS[p].em}</span><b>${PRODS[p].nome}</b></button>`).join("")}</div></div>`;
+  if(cur){
+    h+=`<div class="card"><h2>Taglia</h2><div class="row">${["S","M","L"].map(s=>{const r=REGOLE[s];return `<button class="chip big ${cur.size===s?"on":""}" data-size="${s}"><b>${s}</b><span class="pr">${eur(CONFIG.prezzi[s])}</span><small>${PRODS[cur.prod].base[s]}<br>${r.c} crunchy + ${r.s} ${r.s===1?"salsa":"salse"}</small></button>`}).join("")}</div></div>`;
+    if(cur.size){
+      const r=REGOLE[cur.size];
+      h+=`<div class="card"><h2>Farina <span class="hint">(facoltativa)</span></h2><div class="row">${PRODS[cur.prod].farine.map(f=>`<button class="chip ${cur.flour===f?"on":""}" data-flour="${esc(f)}">${esc(f)}</button>`).join("")}</div></div>`;
+      if(cur.prod==="porridge") h+=`<div class="card"><h2>Yogurt</h2><div class="row">${YOGURT.map(y=>`<button class="chip ${cur.yogurt===y?"on":""}" data-yog="${y}">${y}</button>`).join("")}</div></div>`;
+      const fc=cur.crunch.length>=r.c, fs=cur.sauces.length>=r.s;
+      h+=`<div class="card"><h2>🥣 Crunchy <span class="counter ${fc?"full":""}">${cur.crunch.length}/${r.c}</span></h2><div class="row">${CRUNCHY.map(t=>{const on=cur.crunch.includes(t);return `<button class="chip ${on?"on":""}" data-top="${esc(t)}" ${(!on&&fc)?"disabled":""}>${esc(t)}</button>`}).join("")}</div></div>`;
+      h+=`<div class="card"><h2>🍫 Salse e creme <span class="counter ${fs?"full":""}">${cur.sauces.length}/${r.s}</span></h2><p class="hint" style="margin:0">Puoi mischiare Deluxe, Gourmet e Zero Kcal.</p>${SALSE.map(g=>`<h3>${g.g}</h3><div class="row">${g.o.map(t=>{const on=cur.sauces.includes(t);return `<button class="chip ${on?"on":""}" data-top="${esc(t)}" ${(!on&&fs)?"disabled":""}>${esc(t)}</button>`}).join("")}</div>`).join("")}</div>`;
+      if(st.notice) h+=`<div class="msg">${esc(st.notice)}</div>`;
+      h+=`<div><button class="primary" id="add">Aggiungi all'ordine · ${eur(CONFIG.prezzi[cur.size])}</button><div class="err">${esc(st.err)}</div></div>`;
+    }
+  }
+  setHTML(h);
+}
+
+function viewCheckout(){
+  const f=st.f, days=availableDays(romeNow());
+  if(f.data && !days.some(d=>dayKey(d)===f.data)) f.data=null;
+  const lim = String(CONFIG.oraLimite).padStart(2,"0")+":00";
+  let h=`<div class="card"><h2>Riepilogo</h2>${st.cart.map(it=>`<div class="item"><div class="l"><span class="e">${PRODS[it.prod].em}</span><div><b>${PRODS[it.prod].nome} ${it.size}</b><span>${esc(detail(it))}</span></div></div><b>${eur(price(it))}</b></div>`).join("")}<div class="tot"><span>Totale</span><span>${eur(total())}</span></div><button class="ghost" id="back" style="margin-top:10px">← Aggiungi o modifica</button></div>`;
+  h+=`<div class="card"><h2>📍 Dove ritiri?</h2><div class="row">${CONFIG.sedi.map(s=>`<button class="chip ${f.sede===s.id?"on":""}" data-sede="${s.id}">${esc(s.nome)}</button>`).join("")}</div>
+  <h3>Giorno</h3><div class="row">${days.map(d=>`<button class="chip ${f.data===dayKey(d)?"on":""}" data-date="${dayKey(d)}">${esc(fmtDay(d,{weekday:"short",day:"numeric",month:"short"}))}</button>`).join("")}</div>
+  <p class="hint" style="margin:8px 0 0">Ordina entro le ${lim} del giorno prima.</p>
+  <h3>Orario</h3><div class="row">${CONFIG.orari.map(o=>`<button class="chip ${f.ora===o?"on":""}" data-time="${o}">${o}</button>`).join("")}</div></div>`;
+  h+=`<div class="card"><h2>🙋 I tuoi dati</h2>
+  <label for="nome" style="margin-top:0">Nome *</label><input id="nome" autocomplete="name" value="${esc(f.nome)}">
+  <label for="tel">Telefono / WhatsApp *</label><input id="tel" type="tel" autocomplete="tel" value="${esc(f.tel)}">
+  <label for="note">Extra, allergie, intolleranze <span class="hint">(facoltativo)</span></label><textarea id="note" rows="2">${esc(f.note)}</textarea></div>`;
+  h+=`<div class="card"><h2>💳 Come paghi?</h2><div class="row">${payOnline()?`<button class="chip ${f.pay==="online"?"on":""}" data-pay="online">Online (subito)</button>`:""}<button class="chip ${f.pay==="cash"?"on":""}" data-pay="cash">Di persona al ritiro</button></div>`;
+  if(f.pay==="online") h+=`<p class="hint" style="margin:10px 0 0">Dopo l'invio ti mostro come pagare. L'ordine viene preparato dopo il pagamento.</p>`;
+  if(f.pay==="cash"){
+    const tagli=CONFIG.contantiTagli.filter(t=>t>=total());
+    h+=`<h3>Con quanto paghi? <span class="hint">(così prepariamo il resto)</span></h3><div class="row"><button class="chip ${f.cash==="exact"?"on":""}" data-cash="exact">Importo esatto</button>${tagli.map(t=>`<button class="chip ${f.cash===String(t)?"on":""}" data-cash="${t}">${t}€</button>`).join("")}</div><div class="cash" id="cashmsg">${cashMsg()}</div>`;
+  }
+  h+=`</div><div><button class="primary" id="send">Invia ordine · ${eur(total())}</button><div class="err">${esc(st.err)}</div></div>`;
+  setHTML(h);
+}
+function cashMsg(){
+  const c=st.f.cash; if(!c) return "";
+  if(c==="exact") return "Perfetto, niente resto 👌";
+  return "Resto da preparare: "+eur(+c-total());
+}
+
+function viewDone(){
+  const o=st.order, P=CONFIG.pagamento;
+  let h=`<div class="card done"><div class="big-e">✅</div><h2>Ordine inviato!</h2><p style="margin:0">Il tuo codice</p><div class="code">${o.code}</div><p class="hint">${esc(o.sede.nome)}<br>${esc(o.dataLabel)} alle ${esc(o.ora)}</p></div>`;
+  if(o.pay==="online"){
+    h+=`<div class="card"><h2>💳 Completa il pagamento · ${eur(o.totale)}</h2><p class="hint" style="margin:0">Il tuo ordine viene preparato dopo il pagamento. Scrivi come causale il codice <b>${o.code}</b>.</p>`;
+    if(P.iban) h+=`<div class="kv"><small>Bonifico istantaneo${P.intestatario?" a "+esc(P.intestatario):""}</small><b id="iban">${esc(P.iban)}</b></div><button class="ghost" id="copyiban" style="width:100%">Copia IBAN</button>`;
+    if(P.paypal) h+=`<a class="primary" target="_blank" rel="noopener" href="https://www.paypal.me/${encodeURIComponent(P.paypal)}/${o.totale.toFixed(2)}EUR">Paga ${eur(o.totale)} con PayPal</a>`;
+    h+=`</div>`;
+  } else {
+    h+=`<div class="card"><h2>💶 Paghi di persona</h2><p style="margin:0">${o.cash==="exact"?"Porta l'importo esatto: "+eur(o.totale):"Totale "+eur(o.totale)+", paghi con "+eur(+o.cash)+": resto "+eur(+o.cash-o.totale)}.</p></div>`;
+  }
+  h+=`<button class="ghost" id="again" style="width:100%">Fai un nuovo ordine</button>`;
+  setHTML(h); confetti();
+}
+function viewFail(){
+  const o=st.order;
+  const mail=`mailto:${o.sede.email}?subject=${encodeURIComponent("Ordine "+o.code)}&body=${encodeURIComponent(o.text)}`;
+  const wa=`https://wa.me/${o.sede.whatsapp||""}?text=${encodeURIComponent(o.text)}`;
+  setHTML(`<div class="card done"><div class="big-e">😕</div><h2>Invio non riuscito</h2><p>Il tuo ordine è ancora qui. Puoi mandarlo subito su WhatsApp, con tutto già scritto:</p><a class="primary" style="background:#25d366;box-shadow:0 10px 22px rgba(37,211,102,.3)" target="_blank" rel="noopener" href="${wa}">💬 Invia l'ordine su WhatsApp</a><button class="ghost" id="retry" style="width:100%;margin-top:12px">Riprova l'invio automatico</button><p class="hint" style="margin-top:14px"><a class="lnk" href="${mail}">Oppure con la tua app di posta</a></p>${st.errDetail?`<p class="hint" style="font-size:12px;margin-top:10px">Dettaglio tecnico: ${esc(st.errDetail)}</p>`:""}</div>`);
+}
+
+function confetti(){
+  const em=["🥣","🥞","🧇","🍫","✨","🍓"];
+  for(let i=0;i<26;i++){
+    const s=document.createElement("span"); s.className="conf"; s.textContent=em[i%em.length];
+    s.style.left=Math.random()*100+"vw"; s.style.animationDuration=(2+Math.random()*2)+"s"; s.style.animationDelay=(Math.random()*.6)+"s";
+    document.body.appendChild(s); setTimeout(()=>s.remove(),5000);
+  }
+}
+function updateBar(){
+  const show=st.view==="build" && st.cart.length>0;
+  const was=!$bar.hidden; $bar.hidden=!show;
+  if(show){ $barTxt.innerHTML=`${st.cart.length} ${st.cart.length===1?"dolce":"dolci"} · ${eur(total())}<small>Vai a ritiro e pagamento</small>`; if(was){ $barTxt.classList.remove("bump"); void $barTxt.offsetWidth; $barTxt.classList.add("bump"); } }
+}
+function updateSteps(){
+  const idx={build:0,checkout:1,done:2,fail:1}[st.view];
+  [...$steps.children].forEach((s,i)=>{ s.className = i===idx?"on":(i<idx?"ok":""); });
+}
+
+/* ================= eventi ================= */
+$app.addEventListener("input", e => {
+  const id=e.target.id, f=st.f;
+  if(id==="nome") f.nome=e.target.value; else if(id==="tel") f.tel=e.target.value; else if(id==="note") f.note=e.target.value;
+});
+$app.addEventListener("click", e => {
+  const b=e.target.closest("button, a"); if(!b) return;
+  const d=b.dataset, cur=st.cur, f=st.f;
+  if(d.prod){ if(!(cur&&cur.prod===d.prod)) st.cur=newItem(d.prod); st.notice=st.err=""; popReq={k:"prod",v:d.prod}; render(); return; }
+  if(d.size){
+    cur.size=d.size; st.notice=st.err="";
+    const r=REGOLE[cur.size], cut=[];
+    if(cur.crunch.length>r.c){ cut.push(cur.crunch.length-r.c+" crunchy"); cur.crunch=cur.crunch.slice(0,r.c); }
+    if(cur.sauces.length>r.s){ cut.push(cur.sauces.length-r.s+" salse"); cur.sauces=cur.sauces.slice(0,r.s); }
+    if(cut.length) st.notice=`Taglia ${cur.size}: ho tolto ${cut.join(" e ")} in più.`;
+    popReq={k:"size",v:d.size}; render(); return;
+  }
+  if(d.flour){ cur.flour=cur.flour===d.flour?null:d.flour; popReq={k:"flour",v:d.flour}; render(); return; }
+  if(d.yog){ cur.yogurt=d.yog; st.err=""; popReq={k:"yog",v:d.yog}; render(); return; }
+  if(d.top){
+    const isC=CRUNCHY.includes(d.top), arr=isC?cur.crunch:cur.sauces, max=REGOLE[cur.size][isC?"c":"s"], i=arr.indexOf(d.top);
+    if(i>=0) arr.splice(i,1); else if(arr.length<max) arr.push(d.top);
+    st.notice=st.err=""; popReq={k:"top",v:d.top}; render(); return;
+  }
+  if(d.del!==undefined){ st.cart.splice(+d.del,1); if(!st.cart.length) st.view="build"; render(); return; }
+  if(d.sede){ f.sede=d.sede; st.err=""; saveFields(); popReq={k:"sede",v:d.sede}; render(); return; }
+  if(d.date){ f.data=d.date; st.err=""; popReq={k:"date",v:d.date}; render(); return; }
+  if(d.time){ f.ora=d.time; st.err=""; popReq={k:"time",v:d.time}; render(); return; }
+  if(d.pay){ f.pay=d.pay; if(d.pay!=="cash") f.cash=null; st.err=""; popReq={k:"pay",v:d.pay}; render(); return; }
+  if(d.cash){ f.cash=d.cash; st.err=""; popReq={k:"cash",v:d.cash}; render(); return; }
+  switch(b.id){
+    case "add": { const m=missing(cur); if(m){ st.err=m; render(); return; } st.cart.push(cur); st.cur=null; st.notice=st.err=""; enter=true; render(); window.scrollTo({top:0,behavior:"smooth"}); return; }
+    case "back": go("build"); return;
+    case "send": send(); return;
+    case "retry": deliver(st.order); return;
+    case "again": st.cart=[]; st.cur=null; st.order=null; st.f.data=null; st.f.ora=null; st.f.pay=null; st.f.cash=null; go("build"); return;
+    case "copyiban": { const t=document.getElementById("iban").textContent;
+      const ok=()=>{b.textContent="Copiato ✓"}; (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(ok).catch(()=>{const r=document.createRange();r.selectNode(document.getElementById("iban"));const s=getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand("copy")}catch(_){ }ok()}); return; }
+  }
+});
+$barBtn.addEventListener("click",()=>{
+  if(st.cur && st.cur.size && !missing(st.cur)){ st.cart.push(st.cur); st.cur=null; }
+  go("checkout");
+});
+function saveFields(){}
+
+/* ================= invio ================= */
+function send(){
+  const f=st.f;
+  f.nome=(document.getElementById("nome")||{value:f.nome}).value.trim();
+  f.tel=(document.getElementById("tel")||{value:f.tel}).value.trim();
+  f.note=(document.getElementById("note")||{value:f.note}).value.trim();
+  const fail=m=>{ st.err=m; render(); };
+  if(!f.sede) return fail("Scegli dove ritirare.");
+  if(!f.data) return fail("Scegli il giorno di ritiro.");
+  if(!f.ora) return fail("Scegli l'orario di ritiro.");
+  if(!f.nome) return fail("Scrivi il tuo nome.");
+  if(f.tel.replace(/\D/g,"").length<6) return fail("Inserisci un numero di telefono valido.");
+  if(!f.pay) return fail("Scegli come pagare.");
+  if(f.pay==="cash" && !f.cash) return fail("Scegli con quanto paghi (anche l'importo esatto).");
+  if(f.pay==="cash" && f.cash!=="exact" && +f.cash<total()) f.cash="exact";
+  for(const it of st.cart){ const m=missing(it); if(m) return fail(`${PRODS[it.prod].nome} ${it.size}: ${m}`); }
+  const day=availableDays(romeNow()).find(d=>dayKey(d)===f.data);
+  if(!day){ f.data=null; return fail("Gli ordini per quel giorno sono chiusi: scegli un altro giorno."); }
+  const sede=CONFIG.sedi.find(s=>s.id===f.sede), dataLabel=fmtDay(day,{weekday:"long",day:"numeric",month:"long"});
+  const code=Array.from({length:4},()=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random()*32)]).join("");
+  const payTxt = f.pay==="online" ? "ONLINE — DA VERIFICARE (causale "+code+")" : (f.cash==="exact"?"Di persona, importo esatto":"Di persona, paga con "+eur(+f.cash)+" → resto "+eur(+f.cash-total()));
+  const text=[`ORDINE ${code}`,`Ritiro: ${sede.nome}`,`Quando: ${dataLabel} ore ${f.ora}`,`Nome: ${f.nome}`,`Telefono: ${f.tel}`,"",...st.cart.map((it,i)=>`${i+1}) ${describe(it)} — ${eur(price(it))}`),"",`Totale: ${eur(total())}`,`Pagamento: ${payTxt}`,f.note?`Note: ${f.note}`:null].filter(x=>x!==null).join("\n");
+  st.order={code,sede,dataLabel,ora:f.ora,pay:f.pay,cash:f.cash,totale:total(),nome:f.nome,tel:f.tel,text};
+  deliver(st.order);
+}
+async function deliver(o){
+  const btn=document.getElementById("send")||document.getElementById("retry");
+  if(btn){ btn.disabled=true; btn.textContent="Invio in corso…"; }
+  try{
+    const r=await fetch("https://formsubmit.co/ajax/"+encodeURIComponent(o.sede.email),{
+      method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},
+      body:JSON.stringify({_subject:`${CONFIG.titoloEmail} ${o.code} · ${o.nome} · ${o.sede.id==="sapienza"?"Sapienza":"Tor Vergata"} ${o.ora}`,_template:"table",_captcha:"false",_honey:"",
+        Ordine:o.text,Codice:o.code,Nome:o.nome,Telefono:o.tel})
+    });
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok || j.success==="false" || j.success===false) throw new Error(j.message||"invio fallito");
+    st.cart=[]; st.cur=null; go("done");
+  }catch(e){ console.warn("Invio ordine fallito:",e&&e.message); st.errDetail=String((e&&e.message)||e).slice(0,140); go("fail"); }
+}
+
+render();
+</script>
+</body>
+</html>
