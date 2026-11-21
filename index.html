@@ -159,9 +159,6 @@ function detail(it){ return describe(it).split(" · ").slice(1).join(" · "); }
 function missing(it){
   if(!it.size) return "Scegli la taglia.";
   if(it.prod==="porridge" && !it.yogurt) return "Scegli lo yogurt.";
-  const r=REGOLE[it.size];
-  if(it.crunch.length<r.c) return `Scegli ancora ${r.c-it.crunch.length} crunchy (granola).`;
-  if(it.sauces.length<r.s) return `Scegli ancora ${r.s-it.sauces.length} ${r.s-it.sauces.length===1?"salsa":"salse"}.`;
   return "";
 }
 
@@ -205,14 +202,14 @@ function viewBuild(){
   }
   h+=`<div class="card"><h2>${st.cart.length?"Aggiungi un altro dolce":"Cosa ti va oggi?"}</h2><div class="prods">${Object.keys(PRODS).map(p=>`<button class="prodc ${cur&&cur.prod===p?"on":""}" data-prod="${p}"><span class="em">${PRODS[p].em}</span><b>${PRODS[p].nome}</b></button>`).join("")}</div></div>`;
   if(cur){
-    h+=`<div class="card"><h2>Taglia</h2><div class="row">${["S","M","L"].map(s=>{const r=REGOLE[s];return `<button class="chip big ${cur.size===s?"on":""}" data-size="${s}"><b>${s}</b><span class="pr">${eur(CONFIG.prezzi[s])}</span><small>${PRODS[cur.prod].base[s]}<br>${r.c} crunchy + ${r.s} ${r.s===1?"salsa":"salse"}</small></button>`}).join("")}</div></div>`;
+    h+=`<div class="card"><h2>Taglia</h2><div class="row">${["S","M","L"].map(s=>{const r=REGOLE[s];return `<button class="chip big ${cur.size===s?"on":""}" data-size="${s}"><b>${s}</b><span class="pr">${eur(CONFIG.prezzi[s])}</span><small>${PRODS[cur.prod].base[s]}<br>fino a ${r.c} crunchy + ${r.s} ${r.s===1?"salsa":"salse"}</small></button>`}).join("")}</div></div>`;
     if(cur.size){
       const r=REGOLE[cur.size];
       h+=`<div class="card"><h2>Farina <span class="hint">(facoltativa)</span></h2><div class="row">${PRODS[cur.prod].farine.map(f=>`<button class="chip ${cur.flour===f?"on":""}" data-flour="${esc(f)}">${esc(f)}</button>`).join("")}</div></div>`;
       if(cur.prod==="porridge") h+=`<div class="card"><h2>Yogurt</h2><div class="row">${YOGURT.map(y=>`<button class="chip ${cur.yogurt===y?"on":""}" data-yog="${y}">${y}</button>`).join("")}</div></div>`;
       const fc=cur.crunch.length>=r.c, fs=cur.sauces.length>=r.s;
-      h+=`<div class="card"><h2>🥣 Crunchy <span class="counter ${fc?"full":""}">${cur.crunch.length}/${r.c}</span></h2><div class="row">${CRUNCHY.map(t=>{const on=cur.crunch.includes(t);return `<button class="chip ${on?"on":""}" data-top="${esc(t)}" ${(!on&&fc)?"disabled":""}>${esc(t)}</button>`}).join("")}</div></div>`;
-      h+=`<div class="card"><h2>🍫 Salse e creme <span class="counter ${fs?"full":""}">${cur.sauces.length}/${r.s}</span></h2><p class="hint" style="margin:0">Puoi mischiare Deluxe, Gourmet e Zero Kcal.</p>${SALSE.map(g=>`<h3>${g.g}</h3><div class="row">${g.o.map(t=>{const on=cur.sauces.includes(t);return `<button class="chip ${on?"on":""}" data-top="${esc(t)}" ${(!on&&fs)?"disabled":""}>${esc(t)}</button>`}).join("")}</div>`).join("")}</div>`;
+      h+=`<div class="card"><h2>🥣 Crunchy <span class="counter ${fc?"full":""}">${cur.crunch.length}/${r.c} max</span></h2><p class="hint" style="margin:0 0 8px">Fino a ${r.c}. Se non ne vuoi, salta.</p><div class="row">${CRUNCHY.map(t=>{const on=cur.crunch.includes(t);return `<button class="chip ${on?"on":""}" data-top="${esc(t)}" ${(!on&&fc)?"disabled":""}>${esc(t)}</button>`}).join("")}</div></div>`;
+      h+=`<div class="card"><h2>🍫 Salse e creme <span class="counter ${fs?"full":""}">${cur.sauces.length}/${r.s} max</span></h2><p class="hint" style="margin:0">Fino a ${r.s}, anche mischiando Deluxe, Gourmet e Zero Kcal. Se non ne vuoi, salta.</p>${SALSE.map(g=>`<h3>${g.g}</h3><div class="row">${g.o.map(t=>{const on=cur.sauces.includes(t);return `<button class="chip ${on?"on":""}" data-top="${esc(t)}" ${(!on&&fs)?"disabled":""}>${esc(t)}</button>`}).join("")}</div>`).join("")}</div>`;
       if(st.notice) h+=`<div class="msg">${esc(st.notice)}</div>`;
       h+=`<div><button class="primary" id="add">Aggiungi all'ordine · ${eur(CONFIG.prezzi[cur.size])}</button><div class="err">${esc(st.err)}</div></div>`;
     }
