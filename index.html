@@ -107,13 +107,15 @@ const CONFIG = {
   anticipoGiorni: 1,           // si ordina il giorno prima...
   oraLimite: 12,               // ...entro le 12:00
   prezzi: {S:4, M:5.5, L:7},
-  contantiTagli: [5,10,20,50],
+  contantiTagli: [5,10,15,20,50],
   pagamento: {                  // lascia vuoto per nascondere il metodo
     iban: "IT02A0366901600817886490816",
     intestatario: "ELEONORA LUGLI & SAMUEL RINCHIUSI",
     paypal: ""                  // solo il nome di paypal.me/NOME
   },
-  titoloEmail: "Nuovo ordine"
+  titoloEmail: "Nuovo ordine",
+  // Chiave gratuita di Web3Forms (web3forms.com): se la inserisci, gli ordini partono da lì (più affidabile). Se vuota usa FormSubmit.
+  web3formsKey: "6952fc1e-10c8-4bec-a99f-ebff25412fce"
 };
 
 const PRODS = {
@@ -373,20 +375,37 @@ function send(){
   st.order={code,sede,dataLabel,ora:f.ora,pay:f.pay,cash:f.cash,totale:tot,nome:f.nome,tel:f.tel,text,confLink};
   if(on) go("pay"); else deliver(st.order);
 }
+async function postOrder(o){
+  const on=o.pay==="online";
+  const subject=`${on?"💳 DA VERIFICARE · ":""}${CONFIG.titoloEmail} ${o.code} · ${o.nome} · ${o.sede.id==="sapienza"?"Sapienza":"Tor Vergata"} ${o.ora}`;
+  const key=o.sede.web3formsKey||CONFIG.web3formsKey;
+  const ac=new AbortController(), to=setTimeout(()=>ac.abort(),15000);
+  try{
+    let r,j;
+    if(key){
+      r=await fetch("https://api.web3forms.com/submit",{method:"POST",signal:ac.signal,headers:{"Content-Type":"application/json","Accept":"application/json"},
+        body:JSON.stringify({access_key:key,subject,from_name:CONFIG.brand,message:o.text+"\n\nCONFERMA SU WHATSAPP (tocca dopo aver verificato il pagamento):\n"+o.confLink,Codice:o.code,Nome:o.nome,Telefono:o.tel})});
+      j=await r.json().catch(()=>({}));
+      if(!r.ok || !j.success) throw new Error(j.message||("invio fallito ("+r.status+")"));
+    } else {
+      r=await fetch("https://formsubmit.co/ajax/"+encodeURIComponent(o.sede.email),{method:"POST",signal:ac.signal,headers:{"Content-Type":"application/json","Accept":"application/json"},
+        body:JSON.stringify({_subject:subject,_template:"table",_captcha:"false",_honey:"",Ordine:o.text,Codice:o.code,Nome:o.nome,Telefono:o.tel,"Conferma_su_WhatsApp (tocca dopo aver verificato il pagamento)":o.confLink})});
+      j=await r.json().catch(()=>({}));
+      if(!r.ok || j.success==="false" || j.success===false) throw new Error(j.message||("invio fallito ("+r.status+")"));
+    }
+  } finally { clearTimeout(to); }
+}
 async function deliver(o){
   const btn=document.getElementById("send")||document.getElementById("paid")||document.getElementById("retry");
   if(btn){ btn.disabled=true; btn.textContent="Invio in corso…"; }
-  const on=o.pay==="online";
   try{
-    const r=await fetch("https://formsubmit.co/ajax/"+encodeURIComponent(o.sede.email),{
-      method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},
-      body:JSON.stringify({_subject:`${on?"💳 DA VERIFICARE · ":""}${CONFIG.titoloEmail} ${o.code} · ${o.nome} · ${o.sede.id==="sapienza"?"Sapienza":"Tor Vergata"} ${o.ora}`,_template:"table",_captcha:"false",_honey:"",
-        Ordine:o.text,Codice:o.code,Nome:o.nome,Telefono:o.tel,"Conferma_su_WhatsApp (tocca dopo aver verificato il pagamento)":o.confLink})
-    });
-    const j=await r.json().catch(()=>({}));
-    if(!r.ok || j.success==="false" || j.success===false) throw new Error(j.message||"invio fallito");
+    await postOrder(o);
     st.cart=[]; st.cur=null; go("done");
-  }catch(e){ console.warn("Invio ordine fallito:",e&&e.message); st.errDetail=String((e&&e.message)||e).slice(0,140); go("fail"); }
+  }catch(e){
+    console.warn("Invio ordine fallito:",e&&e.message);
+    st.errDetail = (e&&e.name==="AbortError") ? "il servizio di invio non risponde (timeout)" : String((e&&e.message)||e).slice(0,140);
+    go("fail");
+  }
 }
 
 render();
